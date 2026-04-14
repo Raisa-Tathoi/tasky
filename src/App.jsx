@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { loadState, saveState } from './store'
 import ProjectList from './components/ProjectList'
 import Charts from './components/Charts'
 import Timer from './components/Timer'
