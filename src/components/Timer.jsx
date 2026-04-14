@@ -29,9 +29,9 @@ export default function Timer({ activeTimer, state, stopTimer }) {
         textAlign: 'center',
         minWidth: 280
       }}>
-        <div style={{ fontSize: 20, color: '#888', marginBottom: 4 }}>Tracking - LOCK IN</div>
+        <div style={{ fontSize: 18, color: '#888', marginBottom: 6 }}>LOCKED IN</div>
         <div style={{ fontSize: 30, fontWeight: 500, marginBottom: 6 }}>{task.name}</div>
-        <div style={{ fontSize: 20, color, marginBottom: '1.5rem' }}>{project.name}</div>
+        <div style={{ fontSize: 18, color, marginBottom: '1.5rem' }}>{project.name}</div>
         <div style={{ fontSize: 60, fontWeight: 500, letterSpacing: 2, marginBottom: '1.5rem', fontVariantNumeric: 'tabular-nums' }}>
           {fmtTimer(elapsed)}
         </div>
