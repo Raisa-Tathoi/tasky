@@ -51,3 +51,7 @@ export const PROJECT_COLORS = [
   '#378ADD', '#1D9E75', '#D85A30', '#D4537E',
   '#7F77DD', '#BA7517', '#639922', '#E24B4A'
 ]
+
+export function genId() {
+  return 's_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7)
+}
