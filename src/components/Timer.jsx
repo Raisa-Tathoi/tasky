@@ -25,7 +25,7 @@ export default function Timer({ activeTimer, state, stopTimer }) {
       <div style={{
         background: '#fff',
         borderRadius: 16,
-        padding: '3.5rem 5rem',
+        padding: '10.5rem 15rem',
         textAlign: 'center',
         minWidth: 280
       }}>
