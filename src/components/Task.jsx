@@ -108,7 +108,7 @@ export default function Task({ tid, pid, task, state, updateState, startTimer, a
                             display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                             padding: '6px 10px', borderBottom: '0.5px solid #eee', fontSize: 12
                         }}>
-                            <span style={{ color: '#888' }}>{entry.date}</span>
+                            <span style={{ color: '#888' }}>{state.projects[pid].totalTime}</span>
                             <span>{fmtTime(entry.seconds)}</span>
                             <button
                                 onClick={() => deleteEntry(entry.id)}
