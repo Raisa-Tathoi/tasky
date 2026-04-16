@@ -24,7 +24,8 @@ export default function Charts({ state }) {
     const [weekOffset, setWeekOffset] = useState(0) // 0 = this week, -1 = last week
 
     const projIds = Object.keys(state.projects)
-    const today = new Date()
+    const now = new Date()
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
 
     // aggregate all sessions by date + project
     const byDate = {}

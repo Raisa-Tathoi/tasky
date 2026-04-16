@@ -2,7 +2,7 @@ import { useState } from 'react'
 import ProjectList from './components/ProjectList'
 import Charts from './components/Charts'
 import Timer from './components/Timer'
-import { loadState, saveState, genId } from './store'
+import { loadState, saveState, genId, todayKey } from './store'
 
 export default function App() {
     const [state, setState] = useState(() => loadState())
@@ -42,7 +42,7 @@ export default function App() {
             },
             sessions: [
                 ...state.sessions,
-                { id: genId(), date: new Date().toISOString().slice(0, 10), projectId, taskId, seconds: elapsed }
+                { id: genId(), date: todayKey(), projectId, taskId, seconds: elapsed }
             ]
         }
 
