@@ -45,7 +45,7 @@ export default function Charts({ state }) {
     const dayChartData = {
         labels: projIds.map(pid => state.projects[pid].name),
         datasets: [{
-            data: projIds.map(pid => Math.round((dayData[pid] || 0) / 60)),
+            data: projIds.map(pid => (dayData[pid] || 0) / 3600),
             backgroundColor: projIds.map(pid => PROJECT_COLORS[state.projects[pid].colorIndex]),
             borderRadius: 4
         }]
@@ -65,7 +65,7 @@ export default function Charts({ state }) {
         labels: dayLabels,
         datasets: projIds.map(pid => ({
             label: state.projects[pid].name,
-            data: weekDays.map(d => Math.round(((byDate[dateKey(d)] || {})[pid] || 0) / 60)),
+            data: weekDays.map(d => ((byDate[dateKey(d)] || {})[pid] || 0) / 3600),
             backgroundColor: PROJECT_COLORS[state.projects[pid].colorIndex],
             borderRadius: 2
         }))
@@ -74,10 +74,40 @@ export default function Charts({ state }) {
     const commonOptions = {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { display: false } },
+        plugins: {
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    label: ctx => {
+                        const label = ctx.dataset.label || ctx.label || ''
+                        const hours = ctx.raw
+
+                        const totalMinutes = Math.round(hours * 60)
+                        const h = Math.floor(totalMinutes / 60)
+                        const m = totalMinutes % 60
+
+                        if (h > 0 && m > 0) return `${label}: ${h}h ${m}m`
+                        if (h > 0) return `${label}: ${h}h`
+                        return `${label}: ${m}m`
+                    }
+                }
+            }
+        },
         scales: {
             x: { grid: { display: false }, ticks: { font: { size: 11 } } },
-            y: { beginAtZero: true, ticks: { callback: v => v + 'm', font: { size: 11 } }, grid: { color: 'rgba(128,128,128,0.1)' } }
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: v => {
+                        if (v < 1) return `${Math.round(v * 60)}m`
+                        return v >= 10
+                            ? `${Math.round(v)}h`
+                            : `${Math.round(v * 10) / 10}h`
+                    },
+                    font: { size: 11 }
+                },
+                grid: { color: 'rgba(128,128,128,0.1)' }
+            }
         }
     }
 
@@ -85,7 +115,20 @@ export default function Charts({ state }) {
         ...commonOptions,
         scales: {
             x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } },
-            y: { stacked: true, beginAtZero: true, ticks: { callback: v => v + 'm', font: { size: 11 } }, grid: { color: 'rgba(128,128,128,0.1)' } }
+            y: {
+                stacked: true,
+                beginAtZero: true,
+                ticks: {
+                    callback: v => {
+                        if (v < 1) return `${Math.round(v * 60)}m`
+                        return v >= 10
+                            ? `${Math.round(v)}h`
+                            : `${Math.round(v * 10) / 10}h`
+                    },
+                    font: { size: 11 }
+                },
+                grid: { color: 'rgba(128,128,128,0.1)' }
+            }
         }
     }
 
