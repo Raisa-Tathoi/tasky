@@ -162,7 +162,12 @@ export default function Charts({ state }) {
                         {navBtn('›', () => setDayOffset(o => o + 1), dayOffset >= 0)}
                     </div>
                 </div>
-                <div style={{ height: 220 }}>
+                <div style={{
+                    height: 220, 
+                    background: '#fff',
+                    borderRadius: 8,
+                    padding: 8
+                }}>
                     <Bar key={`day-${dayOffset}`} data={dayChartData} options={commonOptions} />
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 12 }}>{legend}</div>
@@ -181,7 +186,12 @@ export default function Charts({ state }) {
                         {navBtn('›', () => setWeekOffset(o => o + 1), weekOffset >= 0)}
                     </div>
                 </div>
-                <div style={{ height: 260 }}>
+                <div style={{ 
+                    height: 220, 
+                    background: '#fff',
+                    borderRadius: 8,
+                    padding: 8
+                 }}>
                     <Bar key={`week-${weekOffset}`} data={weekChartData} options={weekOptions} />
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 12 }}>{legend}</div>

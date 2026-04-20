@@ -52,7 +52,7 @@ export default function App() {
 
     return (
         <div style={{ maxWidth: 720, margin: '0 auto', padding: '2rem 1rem' }}>
-            <div style={{ display: 'flex', gap: 8, marginBottom: '1.5rem' }}>
+            <div style={{ display: 'flex', gap: 8, marginBottom: '1.5rem', justifyContent: 'center' }}>
                 <button onClick={() => setView('tasks')} className={view === 'tasks' ? 'tab active' : 'tab'}>Tasks</button>
                 <button onClick={() => setView('charts')} className={view === 'charts' ? 'tab active' : 'tab'}>Charts</button>
             </div>
