@@ -5,6 +5,17 @@ import Project from './Project'
 export default function ProjectList({ state, updateState, startTimer, activeTimer, stopTimer }) {
     const [newName, setNewName] = useState('')
 
+    function getLastWorkedMap(sessions) {
+        const map = {}
+
+        for (const s of sessions) {
+            const ts = new Date(s.date).getTime()
+            map[s.projectId] = Math.max(map[s.projectId] || 0, ts)
+        }
+
+        return map
+    }
+
     function addProject() {
         const name = newName.trim()
         if (!name) return
@@ -24,23 +35,13 @@ export default function ProjectList({ state, updateState, startTimer, activeTime
         updateState(newState)
         setNewName('')
 
-        function getLastWorkedMap(sessions) {
-            const map = {}
-
-            for (const s of sessions) {
-                const ts = new Date(s.date).getTime()
-                map[s.projectId] = Math.max(map[s.projectId] || 0, ts)
-            }
-
-            return map
-        }
-
-        const lastWorked = getLastWorkedMap(state.sessions)
-
-        const sortedProjects = Object.entries(state.projects).sort(
-            ([aId], [bId]) => (lastWorked[bId] || 0) - (lastWorked[aId] || 0)
-        )
     }
+
+    const lastWorked = getLastWorkedMap(state.sessions || [])
+
+    const sortedProjects = Object.entries(state.projects || {}).sort(
+        ([aId], [bId]) => (lastWorked[bId] || 0) - (lastWorked[aId] || 0)
+    )
 
     return (
         <div>
