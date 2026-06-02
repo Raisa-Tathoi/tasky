@@ -1,44 +1,42 @@
 import { useState } from 'react'
-import { saveState } from '../store'
 import Project from './Project'
+
+function getLastWorkedMap(sessions) {
+    const map = {}
+    for (const session of sessions) {
+        const timestamp = new Date(session.date).getTime()
+        map[session.projectId] = Math.max(map[session.projectId] || 0, timestamp)
+    }
+    return map
+}
+
+function buildNewProjectState(state, name) {
+    const projectId = 'p_' + Date.now()
+    return {
+        ...state,
+        projects: {
+            ...state.projects,
+            [projectId]: {
+                name,
+                totalTime: 0,
+                colorIndex: Object.keys(state.projects).length % 8,
+                tasks: {}
+            }
+        }
+    }
+}
 
 export default function ProjectList({ state, updateState, startTimer, activeTimer, stopTimer }) {
     const [newName, setNewName] = useState('')
 
-    function getLastWorkedMap(sessions) {
-        const map = {}
-
-        for (const s of sessions) {
-            const ts = new Date(s.date).getTime()
-            map[s.projectId] = Math.max(map[s.projectId] || 0, ts)
-        }
-
-        return map
-    }
-
     function addProject() {
         const name = newName.trim()
         if (!name) return
-        const id = 'p_' + Date.now()
-        const newState = {
-            ...state,
-            projects: {
-                ...state.projects,
-                [id]: {
-                    name,
-                    totalTime: 0,
-                    colorIndex: Object.keys(state.projects).length % 8,
-                    tasks: {}
-                }
-            }
-        }
-        updateState(newState)
+        updateState(buildNewProjectState(state, name))
         setNewName('')
-
     }
 
     const lastWorked = getLastWorkedMap(state.sessions || [])
-
     const sortedProjects = Object.entries(state.projects || {}).sort(
         ([aId], [bId]) => (lastWorked[bId] || 0) - (lastWorked[aId] || 0)
     )
@@ -54,7 +52,6 @@ export default function ProjectList({ state, updateState, startTimer, activeTime
                 />
                 <button onClick={addProject}>Add project</button>
             </div>
-
 
             {Object.keys(state.projects).length === 0 && (
                 <p style={{ color: '#888', fontSize: 13 }}>No projects yet.</p>

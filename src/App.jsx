@@ -1,8 +1,45 @@
 import { useState } from 'react'
 import ProjectList from './components/ProjectList'
 import Charts from './components/Charts'
+import Sheet from './components/Sheet'
 import Timer from './components/Timer'
 import { loadState, saveState, genId, todayKey } from './store'
+
+function buildTimerState(state, activeTimer, elapsed) {
+    const { projectId, taskId } = activeTimer
+    const project = state.projects[projectId]
+    return {
+        ...state,
+        projects: {
+            ...state.projects,
+            [projectId]: {
+                ...project,
+                totalTime: project.totalTime + elapsed,
+                tasks: {
+                    ...project.tasks,
+                    [taskId]: {
+                        ...project.tasks[taskId],
+                        totalTime: project.tasks[taskId].totalTime + elapsed
+                    }
+                }
+            }
+        },
+        sessions: [
+            ...state.sessions,
+            { id: genId(), date: todayKey(), projectId, taskId, seconds: elapsed, startTime: activeTimer.startTime }
+        ]
+    }
+}
+
+function ViewTabs({ view, onChangeView }) {
+    return (
+        <div style={{ display: 'flex', gap: 8, marginBottom: '1.5rem', justifyContent: 'center' }}>
+            <button onClick={() => onChangeView('tasks')} className={view === 'tasks' ? 'tab active' : 'tab'}>Tasks</button>
+            <button onClick={() => onChangeView('charts')} className={view === 'charts' ? 'tab active' : 'tab'}>Charts</button>
+            <button onClick={() => onChangeView('sheet')} className={view === 'sheet' ? 'tab active' : 'tab'}>Sheet</button>
+        </div>
+    )
+}
 
 export default function App() {
     const [state, setState] = useState(() => loadState())
@@ -22,41 +59,13 @@ export default function App() {
     function stopTimer() {
         if (!activeTimer) return
         const elapsed = Math.floor((Date.now() - activeTimer.startTime) / 1000)
-        const { projectId, taskId } = activeTimer
-
-        const newState = {
-            ...state,
-            projects: {
-                ...state.projects,
-                [projectId]: {
-                    ...state.projects[projectId],
-                    totalTime: state.projects[projectId].totalTime + elapsed,
-                    tasks: {
-                        ...state.projects[projectId].tasks,
-                        [taskId]: {
-                            ...state.projects[projectId].tasks[taskId],
-                            totalTime: state.projects[projectId].tasks[taskId].totalTime + elapsed
-                        }
-                    }
-                }
-            },
-            sessions: [
-                ...state.sessions,
-                { id: genId(), date: todayKey(), projectId, taskId, seconds: elapsed }
-            ]
-        }
-
+        updateState(buildTimerState(state, activeTimer, elapsed))
         setActiveTimer(null)
-        updateState(newState)
     }
 
     return (
         <div style={{ maxWidth: 720, margin: '0 auto', padding: '2rem 1rem' }}>
-            <div style={{ display: 'flex', gap: 8, marginBottom: '1.5rem', justifyContent: 'center' }}>
-                <button onClick={() => setView('tasks')} className={view === 'tasks' ? 'tab active' : 'tab'}>Tasks</button>
-                <button onClick={() => setView('charts')} className={view === 'charts' ? 'tab active' : 'tab'}>Charts</button>
-            </div>
-
+            <ViewTabs view={view} onChangeView={setView} />
             {view === 'tasks' && (
                 <ProjectList
                     state={state}
@@ -67,14 +76,8 @@ export default function App() {
                 />
             )}
             {view === 'charts' && <Charts state={state} />}
-
-            {activeTimer && (
-                <Timer
-                    activeTimer={activeTimer}
-                    state={state}
-                    stopTimer={stopTimer}
-                />
-            )}
+            {view === 'sheet' && <Sheet state={state} updateState={updateState} />}
+            {activeTimer && <Timer activeTimer={activeTimer} state={state} stopTimer={stopTimer} />}
         </div>
     )
 }
