@@ -40,13 +40,19 @@ function buildDeleteEntryState(state, pid, tid, task, entry) {
     }
 }
 
-function TaskControls({ task, entries, isRunning, activeTimer, pid, tid, startTimer, stopTimer, showEntries, setShowEntries, setShowManual }) {
+function TaskControls({
+    task, entries, isRunning, activeTimer, pid, tid,
+    startTimer, stopTimer, showEntries, setShowEntries, setShowManual
+}) {
     return (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <span style={{ flex: 1, fontSize: 13 }}>{task.name}</span>
             <span style={{ fontSize: 12, color: '#888' }}>{fmtTime(task.totalTime)}</span>
             {entries.length > 0 && (
-                <button onClick={() => setShowEntries(prev => !prev)} style={{ fontSize: 12, padding: '0 8px', height: 28, color: '#888' }}>
+                <button
+                    onClick={() => setShowEntries(prev => !prev)}
+                    style={{ fontSize: 12, padding: '0 8px', height: 28, color: '#888' }}
+                >
                     {showEntries ? '▲' : '▼'} {entries.length}
                 </button>
             )}
@@ -56,7 +62,12 @@ function TaskControls({ task, entries, isRunning, activeTimer, pid, tid, startTi
             {isRunning ? (
                 <button onClick={stopTimer} style={{ fontSize: 12, padding: '0 8px', height: 28, color: '#E24B4A' }}>Stop</button>
             ) : (
-                <button onClick={() => startTimer(pid, tid)} disabled={!!activeTimer} style={{ fontSize: 12, padding: '0 8px', height: 28 }}>Start</button>
+                <button
+                    onClick={() => startTimer(pid, tid)}
+                    disabled={!!activeTimer}
+                    className={!activeTimer ? 'btn-primary' : undefined}
+                    style={{ fontSize: 12, padding: '0 8px', height: 28 }}
+                >Start</button>
             )}
         </div>
     )
@@ -71,6 +82,11 @@ function EntryList({ entries, onDelete }) {
                     padding: '6px 10px', borderBottom: '0.5px solid #eee', fontSize: 12
                 }}>
                     <span style={{ color: '#888' }}>{entry.date}</span>
+                    <span style={{ color: '#888' }}>
+                        {entry.startTime
+                            ? new Date(entry.startTime).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
+                            : '—'}
+                    </span>
                     <span>{fmtTime(entry.seconds)}</span>
                     <button
                         onClick={() => onDelete(entry.id)}
@@ -89,6 +105,23 @@ function currentTimeString() {
     return `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`
 }
 
+function DurationInputs({ hrs, setHrs, mins, setMins, secs, setSecs }) {
+    return (
+        <>
+            <span style={{ fontSize: 12, color: '#888' }}>Duration:</span>
+            <input type="number" value={hrs} onChange={e => setHrs(e.target.value)}
+                placeholder="0" min="0" style={{ width: 52, height: 28, fontSize: 12, textAlign: 'center' }} />
+            <span style={{ fontSize: 12 }}>h</span>
+            <input type="number" value={mins} onChange={e => setMins(e.target.value)}
+                placeholder="0" min="0" max="59" style={{ width: 52, height: 28, fontSize: 12, textAlign: 'center' }} />
+            <span style={{ fontSize: 12 }}>m</span>
+            <input type="number" value={secs} onChange={e => setSecs(e.target.value)}
+                placeholder="0" min="0" max="59" style={{ width: 52, height: 28, fontSize: 12, textAlign: 'center' }} />
+            <span style={{ fontSize: 12 }}>s</span>
+        </>
+    )
+}
+
 function ManualTimeForm({ onAdd, onCancel }) {
     const [hrs, setHrs] = useState('')
     const [mins, setMins] = useState('')
@@ -102,7 +135,9 @@ function ManualTimeForm({ onAdd, onCancel }) {
         const startDate = new Date()
         startDate.setHours(startHour, startMin, 0, 0)
         onAdd(total, startDate.getTime())
-        setHrs(''); setMins(''); setSecs('')
+        setHrs('')
+        setMins('')
+        setSecs('')
     }
 
     return (
@@ -110,16 +145,11 @@ function ManualTimeForm({ onAdd, onCancel }) {
             <span style={{ fontSize: 12, color: '#888' }}>Start:</span>
             <input type="time" value={startTime} onChange={e => setStartTime(e.target.value)}
                 style={{ height: 28, fontSize: 12, width: 90 }} />
-            <span style={{ fontSize: 12, color: '#888' }}>Duration:</span>
-            <input type="number" value={hrs} onChange={e => setHrs(e.target.value)}
-                placeholder="0" min="0" style={{ width: 52, height: 28, fontSize: 12, textAlign: 'center' }} />
-            <span style={{ fontSize: 12 }}>h</span>
-            <input type="number" value={mins} onChange={e => setMins(e.target.value)}
-                placeholder="0" min="0" max="59" style={{ width: 52, height: 28, fontSize: 12, textAlign: 'center' }} />
-            <span style={{ fontSize: 12 }}>m</span>
-            <input type="number" value={secs} onChange={e => setSecs(e.target.value)}
-                placeholder="0" min="0" max="59" style={{ width: 52, height: 28, fontSize: 12, textAlign: 'center' }} />
-            <span style={{ fontSize: 12 }}>s</span>
+            <DurationInputs
+                hrs={hrs} setHrs={setHrs}
+                mins={mins} setMins={setMins}
+                secs={secs} setSecs={setSecs}
+            />
             <button onClick={handleAdd} style={{ height: 28, fontSize: 12, padding: '0 10px' }}>Add</button>
             <button onClick={onCancel} style={{ height: 28, fontSize: 12, padding: '0 10px' }}>Cancel</button>
         </div>

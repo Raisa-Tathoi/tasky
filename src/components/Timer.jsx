@@ -18,7 +18,7 @@ export default function Timer({ activeTimer, state, stopTimer }) {
   return (
     <div style={{
       position: 'fixed', inset: 0,
-      background: 'rgba(255, 207, 244, 0.9)',
+      background: 'rgba(0, 0, 0, 0.45)',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       zIndex: 999
     }}>

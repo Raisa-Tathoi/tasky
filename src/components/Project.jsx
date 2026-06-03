@@ -110,7 +110,7 @@ function TaskInputRow({ taskInput, setTaskInput, addOrStartTask, suggestions, pi
                     <TaskSuggestions suggestions={suggestions} pid={pid} startTimer={startTimer} setTaskInput={setTaskInput} />
                 )}
             </div>
-            <button onClick={addOrStartTask}>Add task</button>
+            <button onClick={addOrStartTask} className="btn-primary">Add task</button>
         </div>
     )
 }
@@ -145,11 +145,11 @@ export default function Project({ pid, project, state, updateState, startTimer, 
     return (
         <div style={{
             background: '#fff',
-            border: '1px solid #faffd2ff',
+            border: '1px solid #e8e8e4',
             borderRadius: 16,
             padding: '1.25rem',
             marginBottom: 16,
-            boxShadow: '0 2px 8px rgba(0,0,0,0.04)'
+            boxShadow: '0 1px 4px rgba(0,0,0,0.06)'
         }}>
             <ProjectHeader
                 project={project}

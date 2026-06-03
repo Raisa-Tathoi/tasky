@@ -50,7 +50,7 @@ export default function ProjectList({ state, updateState, startTimer, activeTime
                     onKeyDown={e => e.key === 'Enter' && addProject()}
                     placeholder="New project name..."
                 />
-                <button onClick={addProject}>Add project</button>
+                <button onClick={addProject} className="btn-primary">Add project</button>
             </div>
 
             {Object.keys(state.projects).length === 0 && (

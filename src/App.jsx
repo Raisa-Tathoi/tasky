@@ -34,9 +34,18 @@ function buildTimerState(state, activeTimer, elapsed) {
 function ViewTabs({ view, onChangeView }) {
     return (
         <div style={{ display: 'flex', gap: 8, marginBottom: '1.5rem', justifyContent: 'center' }}>
-            <button onClick={() => onChangeView('tasks')} className={view === 'tasks' ? 'tab active' : 'tab'}>Tasks</button>
-            <button onClick={() => onChangeView('charts')} className={view === 'charts' ? 'tab active' : 'tab'}>Charts</button>
-            <button onClick={() => onChangeView('sheet')} className={view === 'sheet' ? 'tab active' : 'tab'}>Sheet</button>
+            <button
+                onClick={() => onChangeView('tasks')}
+                className={view === 'tasks' ? 'tab active' : 'tab'}
+            >Tasks</button>
+            <button
+                onClick={() => onChangeView('charts')}
+                className={view === 'charts' ? 'tab active' : 'tab'}
+            >Charts</button>
+            <button
+                onClick={() => onChangeView('sheet')}
+                className={view === 'sheet' ? 'tab active' : 'tab'}
+            >Sheet</button>
         </div>
     )
 }

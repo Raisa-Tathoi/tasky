@@ -67,11 +67,13 @@ export function getWeekLabel(weekOffset, weekStart, weekEnd) {
 export function buildDayChartData(projIds, projects, dayData) {
     return {
         labels: projIds.map(pid => projects[pid].name),
-        datasets: [{
-            data: projIds.map(pid => (dayData[pid] || 0) / 3600),
-            backgroundColor: projIds.map(pid => PROJECT_COLORS[projects[pid].colorIndex]),
-            borderRadius: 4
-        }]
+        datasets: [
+            {
+                data: projIds.map(pid => (dayData[pid] || 0) / 3600),
+                backgroundColor: projIds.map(pid => PROJECT_COLORS[projects[pid].colorIndex]),
+                borderRadius: 4
+            }
+        ]
     }
 }
 
