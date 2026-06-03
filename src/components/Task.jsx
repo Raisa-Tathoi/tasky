@@ -65,7 +65,7 @@ function TaskControls({
                 <button
                     onClick={() => startTimer(pid, tid)}
                     disabled={!!activeTimer}
-                    className={!activeTimer ? 'btn-primary' : undefined}
+                    className={!activeTimer ? 'btn-soft' : undefined}
                     style={{ fontSize: 12, padding: '0 8px', height: 28 }}
                 >Start</button>
             )}

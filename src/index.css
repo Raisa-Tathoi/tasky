@@ -11,8 +11,8 @@
     --text: #1a1a1a;
     --text-2: #6b6b6b;
     --text-3: #9b9b9b;
-    --accent: #631c1c;
-    --accent-hover: #631c1c;
+    --accent: #4e1717;
+    --accent-hover: #704444;
     --danger: #e24b4a;
     --radius: 10px;
     --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
@@ -101,6 +101,17 @@ button:disabled {
 .btn-primary:hover:not(:disabled) {
     background: var(--accent-hover);
     border-color: var(--accent-hover);
+}
+
+.btn-soft {
+    background: #ab6c6c;
+    border-color: #4d2a2a;
+    color: #fff;
+}
+
+.btn-soft:hover:not(:disabled) {
+    background: #deacac;
+    border-color: #4d2a2a;
 }
 
 .btn-danger {
