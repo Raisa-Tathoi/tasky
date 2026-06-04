@@ -54,8 +54,8 @@ function TaskControls({
                     style={{ fontSize: 12, padding: '0 8px', height: 28, color: '#888' }}
                 >
                     {showEntries ? 
-                    <img src="images/up-icon.png" alt="Up" width="15" height="10" />  : 
-                    <img src="images/dropdown-icon.png" alt="Dropdown" width="15" height="10" /> } 
+                    <img src="/images/up-icon.png" alt="Up" width="15" height="10" />  :
+                    <img src="/images/dropdown-icon.png" alt="Dropdown" width="15" height="10" /> } 
                     {" " + entries.length}
                 </button>
             )}
@@ -70,7 +70,7 @@ function TaskControls({
                     disabled={!!activeTimer}
                     className={!activeTimer ? 'btn-soft' : undefined}
                     style={{ fontSize: 12, padding: '0 8px', height: 28 }}
-                ><img src="images/start-icon.png" alt="Start" width="10" height="10" /></button>
+                ><img src="/images/start-icon.png" alt="Start" width="10" height="10" /></button>
             )}
         </div>
     )
