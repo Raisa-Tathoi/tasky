@@ -53,11 +53,14 @@ function TaskControls({
                     onClick={() => setShowEntries(prev => !prev)}
                     style={{ fontSize: 12, padding: '0 8px', height: 28, color: '#888' }}
                 >
-                    {showEntries ? '▲' : '▼'} {entries.length}
+                    {showEntries ? 
+                    <img src="images/up-icon.png" alt="Up" width="15" height="10" />  : 
+                    <img src="images/dropdown-icon.png" alt="Dropdown" width="15" height="10" /> } 
+                    {" " + entries.length}
                 </button>
             )}
             <button onClick={() => setShowManual(prev => !prev)} style={{ fontSize: 12, padding: '0 8px', height: 28 }}>
-                + time
+                + Add Session
             </button>
             {isRunning ? (
                 <button onClick={stopTimer} style={{ fontSize: 12, padding: '0 8px', height: 28, color: '#E24B4A' }}>Stop</button>
@@ -67,7 +70,7 @@ function TaskControls({
                     disabled={!!activeTimer}
                     className={!activeTimer ? 'btn-soft' : undefined}
                     style={{ fontSize: 12, padding: '0 8px', height: 28 }}
-                >Start</button>
+                ><img src="images/start-icon.png" alt="Start" width="10" height="10" /></button>
             )}
         </div>
     )
@@ -81,13 +84,13 @@ function EntryList({ entries, onDelete }) {
                     display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                     padding: '6px 10px', borderBottom: '0.5px solid #eee', fontSize: 12
                 }}>
-                    <span style={{ color: '#888' }}>{entry.date}</span>
-                    <span style={{ color: '#888' }}>
+                    <span style={{ color: '#888', width: 90, flexShrink: 0 }}>{entry.date}</span>
+                    <span style={{ color: '#888', width: 80, flexShrink: 0 }}>
                         {entry.startTime
                             ? new Date(entry.startTime).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })
                             : '—'}
                     </span>
-                    <span>{fmtTime(entry.seconds)}</span>
+                    <span style={{ width: 60, flexShrink: 0 }}>{fmtTime(entry.seconds)}</span>
                     <button
                         onClick={() => onDelete(entry.id)}
                         style={{ fontSize: 11, height: 22, padding: '0 8px', color: '#E24B4A', borderColor: '#E24B4A' }}

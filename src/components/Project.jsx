@@ -67,7 +67,8 @@ function ProjectHeader({ project, color, confirmDelete, onDeleteClick, onConfirm
                         <button onClick={onCancelDelete} style={{ fontSize: 12, padding: '0 8px', height: 24 }}>No</button>
                     </>
                 ) : (
-                    <button onClick={onDeleteClick} style={{ fontSize: 11, padding: '0 6px', height: 24, color: '#ccc', borderColor: '#eee' }}>✕</button>
+                    <button onClick={onDeleteClick} style={{ fontSize: 11, padding: '0 6px', height: 34, color: '#876565ff', borderColor: '#fbdcdcff' }}>
+                        <img src="images/delete-icon.png" alt="Delete" width="15" height="15" /></button>
                 )}
             </div>
         </div>
