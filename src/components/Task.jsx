@@ -45,7 +45,7 @@ function TaskControls({
     startTimer, stopTimer, showEntries, setShowEntries, setShowManual
 }) {
     return (
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 15 }}>
             <span style={{ flex: 1, fontSize: 13 }}>{task.name}</span>
             <span style={{ fontSize: 12, color: '#888' }}>{fmtTime(task.totalTime)}</span>
             {entries.length > 0 && (
