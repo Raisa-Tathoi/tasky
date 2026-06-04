@@ -206,7 +206,8 @@ function DayColumn({ day, dayIndex, isToday, daySessions, projects, dragPreview,
         <div style={{ flex: 1, minWidth: 0, borderLeft: '0.5px solid #eee' }}>
             <div style={{
                 height: 40, display: 'flex', flexDirection: 'column', alignItems: 'center',
-                justifyContent: 'center', borderBottom: '0.5px solid #eee', color: isToday ? '#378ADD' : '#444'
+                justifyContent: 'center', borderBottom: '0.5px solid #eee', color: isToday ? '#378ADD' : '#444',
+                position: 'sticky', top: 0, background: '#fff', zIndex: 3
             }}>
                 <div style={{ fontSize: 12, fontWeight: isToday ? 600 : 400 }}>
                     {day.toLocaleDateString('en-US', { weekday: 'short' })}
@@ -235,7 +236,7 @@ function DayColumn({ day, dayIndex, isToday, daySessions, projects, dragPreview,
 function TimeLabels() {
     return (
         <div style={{ width: TIME_LABEL_WIDTH, flexShrink: 0 }}>
-            <div style={{ height: 40 }} />
+            <div style={{ height: 40, position: 'sticky', top: 0, background: '#fff', zIndex: 3, borderBottom: '0.5px solid #eee' }} />
             <div style={{ position: 'relative', height: TOTAL_HEIGHT }}>
                 {Array.from({ length: 24 }, (_, hour) => (
                     <div key={hour} style={{
