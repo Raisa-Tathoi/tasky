@@ -10,6 +10,7 @@ const TOTAL_HEIGHT = 48 * ROW_HEIGHT
 const TIME_LABEL_WIDTH = 44
 const DRAG_THRESHOLD_PX = 4
 const SNAP_PX = ROW_HEIGHT / 2  // 15-minute snap
+const MIN_EVENT_PX = 1
 
 const GRID_LINES = [
     'repeating-linear-gradient(to bottom, transparent 0px, transparent 63px, #e0e0e0 63px, #e0e0e0 64px)',
@@ -74,12 +75,12 @@ function applyMoveDrag(drag, mouseEvent, gridEl) {
 }
 
 function applyResizeTopDrag(drag, mouseEvent) {
-    const topPx = Math.max(0, Math.min(drag.startTopPx + drag.startHeightPx - ROW_HEIGHT, snapPx(drag.startTopPx + mouseEvent.clientY - drag.startMouseY)))
+    const topPx = Math.max(0, Math.min(drag.startTopPx + drag.startHeightPx - MIN_EVENT_PX, snapPx(drag.startTopPx + mouseEvent.clientY - drag.startMouseY)))
     return { topPx, heightPx: drag.startTopPx + drag.startHeightPx - topPx, dayIndex: drag.startDayIndex }
 }
 
 function applyResizeBottomDrag(drag, mouseEvent) {
-    const heightPx = Math.min(TOTAL_HEIGHT - drag.startTopPx, Math.max(ROW_HEIGHT, snapPx(drag.startHeightPx + mouseEvent.clientY - drag.startMouseY)))
+    const heightPx = Math.min(TOTAL_HEIGHT - drag.startTopPx, Math.max(MIN_EVENT_PX, snapPx(drag.startHeightPx + mouseEvent.clientY - drag.startMouseY)))
     return { topPx: drag.startTopPx, heightPx, dayIndex: drag.startDayIndex }
 }
 
@@ -111,7 +112,7 @@ function useDragSessions(stateRef, weekDaysRef, updateStateRef, gridRef, onClick
         const placement = getSessionPlacement(session, weekDaysRef.current)
         if (!placement) return
         const topPx = minutesToPixels(placement.startMinutes)
-        const heightPx = Math.max(ROW_HEIGHT, minutesToPixels(placement.durationMinutes))
+        const heightPx = minutesToPixels(placement.durationMinutes)
         dragRef.current = {
             session, dragType, hasDragged: false, preview: null,
             startMouseY: e.clientY, startMouseX: e.clientX,
@@ -177,7 +178,7 @@ function SessionBlock({ session, project, task, placement, isDragging, onStartDr
     if (!project) return null
     const color = PROJECT_COLORS[project.colorIndex]
     const top = minutesToPixels(placement.startMinutes)
-    const height = Math.max(ROW_HEIGHT, minutesToPixels(placement.durationMinutes))
+    const height = minutesToPixels(placement.durationMinutes)
     return (
         <div style={{
             position: 'absolute', top, height: height - 1, left: 2, right: 2,
