@@ -79,6 +79,7 @@ export default function App() {
 
     return (
         <div style={{ maxWidth: 720, margin: '0 auto', padding: '2rem 1rem' }}>
+            <div style={{ position: 'fixed', top: 8, left: 12, fontSize: 11, opacity: 0.5, pointerEvents: 'none' }}>by RT</div>
             <ViewTabs view={view} onChangeView={setView} />
             {view === 'tasks' && (
                 <ProjectList
