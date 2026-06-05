@@ -3,6 +3,7 @@ import ProjectList from './components/ProjectList'
 import Charts from './components/Charts'
 import Sheet from './components/Sheet'
 import Timer from './components/Timer'
+import Todo from './components/Todo'
 import { loadState, saveState, genId, todayKey } from './store'
 
 function buildTimerState(state, activeTimer, elapsed) {
@@ -46,6 +47,10 @@ function ViewTabs({ view, onChangeView }) {
                 onClick={() => onChangeView('sheet')}
                 className={view === 'sheet' ? 'tab active' : 'tab'}
             >Sheet</button>
+            <button
+                onClick={() => onChangeView('todo')}
+                className={view === 'todo' ? 'tab active' : 'tab'}
+            >To-Do</button>
         </div>
     )
 }
@@ -86,6 +91,7 @@ export default function App() {
             )}
             {view === 'charts' && <Charts state={state} />}
             {view === 'sheet' && <Sheet state={state} updateState={updateState} />}
+            {view === 'todo' && <Todo state={state} updateState={updateState} />}
             {activeTimer && <Timer activeTimer={activeTimer} state={state} stopTimer={stopTimer} />}
         </div>
     )

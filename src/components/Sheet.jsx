@@ -153,7 +153,7 @@ function useDragSessions(stateRef, weekDaysRef, updateStateRef, gridRef, onClick
             document.removeEventListener('mousemove', onMove)
             document.removeEventListener('mouseup', onUp)
         }
-    }, [isDragging])
+    }, [isDragging, gridRef, onClickSession, stateRef, updateStateRef, weekDaysRef])
 
     return { dragPreview, startDrag }
 }
@@ -322,11 +322,14 @@ export default function Sheet({ state, updateState }) {
 
     const gridRef = useRef(null)
     const stateRef = useRef(state)
-    stateRef.current = state
     const weekDaysRef = useRef(weekDays)
-    weekDaysRef.current = weekDays
     const updateStateRef = useRef(updateState)
-    updateStateRef.current = updateState
+
+    useEffect(() => {
+        stateRef.current = state
+        weekDaysRef.current = weekDays
+        updateStateRef.current = updateState
+    })
 
     const { dragPreview, startDrag } = useDragSessions(stateRef, weekDaysRef, updateStateRef, gridRef, setSelectedSession)
 

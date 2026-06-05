@@ -2,6 +2,18 @@ import { useState } from 'react'
 import { fmtTime, PROJECT_COLORS } from '../store'
 import Task from './Task'
 
+const CARD_STYLE = {
+    background: '#fff', border: '1px solid #e8e8e4',
+    borderRadius: 16, padding: '1.25rem',
+    marginBottom: 16, boxShadow: '0 1px 4px rgba(0,0,0,0.06)'
+}
+
+const SECTION_HEADER_BTN = {
+    display: 'flex', alignItems: 'center', gap: 6, padding: '8px 0 4px',
+    background: 'none', border: 'none', cursor: 'pointer', width: '100%',
+    color: '#888', textAlign: 'left'
+}
+
 function getTaskLastWorkedMap(sessions, pid) {
     const map = {}
     for (const session of sessions) {
@@ -44,10 +56,34 @@ function buildNewTaskState(state, pid, project, name) {
                 ...project,
                 tasks: {
                     ...project.tasks,
-                    [taskId]: { name, totalTime: 0 }
+                    [taskId]: { name, totalTime: 0, status: 'active', dueDate: null }
                 }
             }
         }
+    }
+}
+
+function sortTasksByLastWorked(tasks, sessions, pid) {
+    const lastWorked = getTaskLastWorkedMap(sessions || [], pid)
+    return Object.entries(tasks).sort(
+        ([aId], [bId]) => (lastWorked[bId] || 0) - (lastWorked[aId] || 0)
+    )
+}
+
+function splitTasksByStatus(sortedTasks) {
+    const active = sortedTasks.filter(([, task]) => !task.status || task.status === 'active')
+    const done = sortedTasks.filter(([, task]) => task.status === 'done')
+    return { active, done }
+}
+
+function makeAddOrStartTask({ project, pid, state, updateState, startTimer, taskInput, setTaskInput }) {
+    return () => {
+        const name = taskInput.trim()
+        if (!name) return
+        const existing = findExistingTask(project.tasks, name)
+        if (existing) { setTaskInput(''); startTimer(pid, existing[0]); return }
+        updateState(buildNewTaskState(state, pid, project, name))
+        setTaskInput('')
     }
 }
 
@@ -116,74 +152,81 @@ function TaskInputRow({ taskInput, setTaskInput, addOrStartTask, suggestions, pi
     )
 }
 
+function TaskSection({ title, count, expanded, onToggle, isEmpty, emptyText, children }) {
+    const arrow = expanded ?
+        <img src="/images/up-icon.png" alt="Up" width="15" height="10" /> :
+        <img src="/images/dropdown-icon.png" alt="Dropdown" width="15" height="10" />
+    return (
+        <div style={{ marginTop: 4 }}>
+            <button onClick={onToggle} style={SECTION_HEADER_BTN}>
+                <span style={{ fontSize: 10 }}>{arrow}</span>
+                <span style={{ fontSize: 11, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    {title}
+                </span>
+                <span style={{ fontSize: 11, color: '#bbb' }}>{count}</span>
+            </button>
+            {expanded && isEmpty && (
+                <p style={{ color: '#bbb', fontSize: 12, padding: '4px 0 0 18px' }}>{emptyText}</p>
+            )}
+            {expanded && !isEmpty && children}
+        </div>
+    )
+}
+
+function TaskBucket({ title, tasks, expanded, onToggle, taskProps }) {
+    return (
+        <TaskSection title={title} count={tasks.length} expanded={expanded} onToggle={onToggle}
+            isEmpty={tasks.length === 0} emptyText={`No ${title.toLowerCase()}`}>
+            {tasks.map(([tid, task]) => (
+                <Task key={tid} tid={tid} task={task} {...taskProps} />
+            ))}
+        </TaskSection>
+    )
+}
+
+function ProjectTaskList({ project, pid, state, updateState, startTimer, activeTimer, stopTimer }) {
+    const [activeOpen, setActiveOpen] = useState(true)
+    const [oldOpen, setOldOpen] = useState(false)
+
+    if (Object.keys(project.tasks).length === 0) {
+        return <p style={{ color: '#888', fontSize: 13 }}>No tasks yet.</p>
+    }
+
+    const sortedTasks = sortTasksByLastWorked(project.tasks, state.sessions, pid)
+    const { active, done } = splitTasksByStatus(sortedTasks)
+    const taskProps = { pid, state, updateState, startTimer, activeTimer, stopTimer }
+
+    return (
+        <>
+            <TaskBucket title="Active Tasks" tasks={active} expanded={activeOpen}
+                onToggle={() => setActiveOpen(!activeOpen)} taskProps={taskProps} />
+            {done.length > 0 && (
+                <TaskBucket title="Old Tasks" tasks={done} expanded={oldOpen}
+                    onToggle={() => setOldOpen(!oldOpen)} taskProps={taskProps} />
+            )}
+        </>
+    )
+}
+
 export default function Project({ pid, project, state, updateState, startTimer, activeTimer, stopTimer }) {
     const [taskInput, setTaskInput] = useState('')
     const [confirmDelete, setConfirmDelete] = useState(false)
     const color = PROJECT_COLORS[project.colorIndex]
     const suggestions = filterTaskSuggestions(project.tasks, taskInput)
-    const taskLastWorked = getTaskLastWorkedMap(state.sessions || [], pid)
-    const sortedTasks = Object.entries(project.tasks).sort(
-        ([aId], [bId]) => (taskLastWorked[bId] || 0) - (taskLastWorked[aId] || 0)
-    )
-
-    function deleteProject() {
-        updateState(buildDeleteProjectState(state, pid))
-    }
-
-    function addOrStartTask() {
-        const name = taskInput.trim()
-        if (!name) return
-        const existing = findExistingTask(project.tasks, name)
-        if (existing) {
-            setTaskInput('')
-            startTimer(pid, existing[0])
-            return
-        }
-        updateState(buildNewTaskState(state, pid, project, name))
-        setTaskInput('')
-    }
+    const deleteProject = () => updateState(buildDeleteProjectState(state, pid))
+    const addOrStartTask = makeAddOrStartTask({
+        project, pid, state, updateState, startTimer, taskInput, setTaskInput
+    })
 
     return (
-        <div style={{
-            background: '#fff',
-            border: '1px solid #e8e8e4',
-            borderRadius: 16,
-            padding: '1.25rem',
-            marginBottom: 16,
-            boxShadow: '0 1px 4px rgba(0,0,0,0.06)'
-        }}>
-            <ProjectHeader
-                project={project}
-                color={color}
-                confirmDelete={confirmDelete}
-                onDeleteClick={() => setConfirmDelete(true)}
-                onConfirmDelete={deleteProject}
-                onCancelDelete={() => setConfirmDelete(false)}
-            />
-            <TaskInputRow
-                taskInput={taskInput}
-                setTaskInput={setTaskInput}
-                addOrStartTask={addOrStartTask}
-                suggestions={suggestions}
-                pid={pid}
-                startTimer={startTimer}
-            />
-            {Object.keys(project.tasks).length === 0 && (
-                <p style={{ color: '#888', fontSize: 13 }}>No tasks yet.</p>
-            )}
-            {sortedTasks.map(([tid, task]) => (
-                <Task
-                    key={tid}
-                    tid={tid}
-                    pid={pid}
-                    task={task}
-                    state={state}
-                    updateState={updateState}
-                    startTimer={startTimer}
-                    activeTimer={activeTimer}
-                    stopTimer={stopTimer}
-                />
-            ))}
+        <div style={CARD_STYLE}>
+            <ProjectHeader project={project} color={color} confirmDelete={confirmDelete}
+                onDeleteClick={() => setConfirmDelete(true)} onConfirmDelete={deleteProject}
+                onCancelDelete={() => setConfirmDelete(false)} />
+            <TaskInputRow taskInput={taskInput} setTaskInput={setTaskInput} addOrStartTask={addOrStartTask}
+                suggestions={suggestions} pid={pid} startTimer={startTimer} />
+            <ProjectTaskList project={project} pid={pid} state={state} updateState={updateState}
+                startTimer={startTimer} activeTimer={activeTimer} stopTimer={stopTimer} />
         </div>
     )
 }
