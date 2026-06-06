@@ -67,19 +67,36 @@ export default function App() {
 
     function startTimer(projectId, taskId) {
         if (activeTimer) return
-        setActiveTimer({ projectId, taskId, startTime: Date.now() })
+        const now = Date.now()
+        setActiveTimer({ projectId, taskId, startTime: now, runningSince: now, accumulated: 0 })
+    }
+
+    function pauseTimer() {
+        if (!activeTimer || !activeTimer.runningSince) return
+        const additional = Math.floor((Date.now() - activeTimer.runningSince) / 1000)
+        setActiveTimer({ ...activeTimer, runningSince: null, accumulated: activeTimer.accumulated + additional })
+    }
+
+    function resumeTimer() {
+        if (!activeTimer || activeTimer.runningSince) return
+        setActiveTimer({ ...activeTimer, runningSince: Date.now() })
     }
 
     function stopTimer() {
         if (!activeTimer) return
-        const elapsed = Math.floor((Date.now() - activeTimer.startTime) / 1000)
+        const additional = activeTimer.runningSince
+            ? Math.floor((Date.now() - activeTimer.runningSince) / 1000)
+            : 0
+        const elapsed = activeTimer.accumulated + additional
         updateState(buildTimerState(state, activeTimer, elapsed))
         setActiveTimer(null)
     }
 
     return (
         <div style={{ maxWidth: 720, margin: '0 auto', padding: '2rem 1rem' }}>
-            <div style={{ position: 'fixed', top: 8, left: 12, fontSize: 11, opacity: 0.5, pointerEvents: 'none' }}>by RT</div>
+            <div style={{ position: 'fixed', top: 8, right: 12, fontSize: 9, fontStyle: 'italic', opacity: 0.5, pointerEvents: 'none' }}>by RT</div>
+            <img src="/images/tasky-logo.png" alt="Tasky" 
+            style={{ position: 'fixed', top: 0, left: 12, height: 150, width: 'auto', imageRendering: 'auto' }} />
             <ViewTabs view={view} onChangeView={setView} />
             {view === 'tasks' && (
                 <ProjectList
@@ -93,7 +110,7 @@ export default function App() {
             {view === 'charts' && <Charts state={state} />}
             {view === 'sheet' && <Sheet state={state} updateState={updateState} />}
             {view === 'todo' && <Todo state={state} updateState={updateState} />}
-            {activeTimer && <Timer activeTimer={activeTimer} state={state} stopTimer={stopTimer} />}
+            {activeTimer && <Timer activeTimer={activeTimer} state={state} stopTimer={stopTimer} pauseTimer={pauseTimer} resumeTimer={resumeTimer} />}
         </div>
     )
 }
